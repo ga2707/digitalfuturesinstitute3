@@ -1,1 +1,40 @@
-<iframe width="3850" height="3000" src="https://lookerstudio.google.com/embed/reporting/ee650d72-7efa-4b7a-b3b2-939435c4a907/page/hn66E" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Auto-Switching Iframe</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    iframe {
+      width: 100vw;
+      height: 100vh;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <iframe id="reportFrame"
+    src="https://lookerstudio.google.com/embed/reporting/c132c5eb-65fa-496f-ad25-ca9933f51177/page/hn66E"
+    allowfullscreen
+    sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox">
+  </iframe>
+
+  <script>
+    const urls = [
+      "https://lookerstudio.google.com/embed/reporting/c132c5eb-65fa-496f-ad25-ca9933f51177/page/hn66E",
+      "https://lookerstudio.google.com/embed/reporting/ee650d72-7efa-4b7a-b3b2-939435c4a907/page/hn66E"
+    ];
+
+    let current = 0;
+    const frame = document.getElementById("reportFrame");
+
+    setInterval(() => {
+      current = (current + 1) % urls.length;
+      frame.src = urls[current];
+    }, 60000); // 60000 ms = 1 minute
+  </script>
+</body>
+</html>
