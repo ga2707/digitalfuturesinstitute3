@@ -12,36 +12,94 @@
       background: black;
     }
 
-    iframe {
+    /* ==============================
+       MAIN SCREEN
+       ============================== */
+
+    .screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+
       width: 100vw;
       height: 100vh;
+
       border: none;
-      display: none;
+
+      transform: translateX(100%);
+      transition: transform 1s ease-in-out;
+
+      z-index: 1;
     }
+
+    /* Current screen */
+    .screen.active {
+      transform: translateX(0);
+      z-index: 2;
+    }
+
+    /* Screen leaving */
+    .screen.exit {
+      transform: translateX(-100%);
+      z-index: 1;
+    }
+
+
+    /* ==============================
+       INTRO VIDEO
+       ============================== */
 
     #introVideo {
       width: 100vw;
       height: 100vh;
+
       object-fit: contain;
       background: black;
     }
+
   </style>
 </head>
 
 <body>
 
-  <!-- DFI Intro Video -->
+
+  <!-- ==============================
+       INTRO VIDEO
+       ============================== -->
+
   <video
     id="introVideo"
+    class="screen active"
     autoplay
     muted
     playsinline>
+
     <source src="dfi_intro_v7.mp4" type="video/mp4">
+
   </video>
 
-  <!-- Looker Studio Dashboard -->
-  <iframe id="reportFrame"
+
+  <!-- ==============================
+       DASHBOARD 1
+       ============================== -->
+
+  <iframe
+    id="dashboard1"
+    class="screen"
     src="https://lookerstudio.google.com/embed/reporting/c132c5eb-65fa-496f-ad25-ca9933f51177/page/hn66E"
+    allowfullscreen
+    sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox">
+  </iframe>
+
+
+  <!-- ==============================
+       DASHBOARD 2
+       ============================== -->
+
+  <iframe
+    id="dashboard2"
+    class="screen"
+    src="https://lookerstudio.google.com/embed/reporting/ee650d72-7efa-4b7a-b3b2-939435c4a907/page/hn66E"
     allowfullscreen
     sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox">
   </iframe>
@@ -49,28 +107,115 @@
 
   <script>
 
-    const urls = [
-      "https://lookerstudio.google.com/embed/reporting/c132c5eb-65fa-496f-ad25-ca9933f51177/page/hn66E",
-      "https://lookerstudio.google.com/embed/reporting/ee650d72-7efa-4b7a-b3b2-939435c4a907/page/hn66E"
+    /* ==============================
+       SCREENS
+       ============================== */
+
+    const screens = [
+      document.getElementById("introVideo"),
+      document.getElementById("dashboard1"),
+      document.getElementById("dashboard2")
     ];
 
     let current = 0;
 
-    const frame = document.getElementById("reportFrame");
-    const video = document.getElementById("introVideo");
+
+    /* ==============================
+       SHOW NEXT SCREEN
+       ============================== */
+
+    function showNext() {
+
+      const currentScreen = screens[current];
+
+      // Move current screen out
+      currentScreen.classList.remove("active");
+      currentScreen.classList.add("exit");
 
 
-    // When the intro video finishes, show the dashboard
-    video.addEventListener("ended", () => {
-      video.style.display = "none";
-      frame.style.display = "block";
-    });
+      // Move to next screen
+      current = (current + 1) % screens.length;
+
+      const nextScreen = screens[current];
+
+      // Reset next screen
+      nextScreen.classList.remove("exit");
+
+      // Force browser to recognize starting position
+      nextScreen.style.transform = "translateX(100%)";
 
 
-    // Switch between dashboards every 1 minute
+      // Start next screen
+      requestAnimationFrame(() => {
+
+        requestAnimationFrame(() => {
+
+          nextScreen.classList.add("active");
+
+        });
+
+      });
+
+
+      /* ==============================
+         IF NEXT SCREEN IS INTRO
+         ============================== */
+
+      if (nextScreen === document.getElementById("introVideo")) {
+
+        // Restart intro video
+        nextScreen.currentTime = 0;
+
+        nextScreen.play();
+
+      }
+
+
+      /* ==============================
+         IF LEAVING INTRO
+         ============================== */
+
+      if (currentScreen === document.getElementById("introVideo")) {
+
+        // Pause intro when it leaves
+        setTimeout(() => {
+          currentScreen.pause();
+        }, 1000);
+
+      }
+
+    }
+
+
+    /* ==============================
+       INTRO VIDEO FINISHED
+       ============================== */
+
+    document
+      .getElementById("introVideo")
+      .addEventListener("ended", () => {
+
+        // Intro → Dashboard 1
+        showNext();
+
+      });
+
+
+    /* ==============================
+       DASHBOARD TIMING
+       ============================== */
+
     setInterval(() => {
-      current = (current + 1) % urls.length;
-      frame.src = urls[current];
+
+      // Only switch automatically when
+      // we're on a dashboard
+
+      if (current !== 0) {
+
+        showNext();
+
+      }
+
     }, 60000);
 
   </script>
