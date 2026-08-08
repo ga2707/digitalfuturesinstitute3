@@ -13,7 +13,7 @@
     }
 
     /* ==============================
-       MAIN SCREEN
+       ALL SCREENS
        ============================== */
 
     .screen {
@@ -32,7 +32,7 @@
       z-index: 1;
     }
 
-    /* Current screen */
+    /* Screen currently visible */
     .screen.active {
       transform: translateX(0);
       z-index: 2;
@@ -50,9 +50,6 @@
        ============================== */
 
     #introVideo {
-      width: 100vw;
-      height: 100vh;
-
       object-fit: contain;
       background: black;
     }
@@ -64,7 +61,7 @@
 
 
   <!-- ==============================
-       INTRO VIDEO
+       DFI INTRO VIDEO
        ============================== -->
 
   <video
@@ -108,27 +105,31 @@
   <script>
 
     /* ==============================
-       SCREENS
+       GET SCREENS
        ============================== */
 
+    const introVideo = document.getElementById("introVideo");
+    const dashboard1 = document.getElementById("dashboard1");
+    const dashboard2 = document.getElementById("dashboard2");
+
     const screens = [
-      document.getElementById("introVideo"),
-      document.getElementById("dashboard1"),
-      document.getElementById("dashboard2")
+      introVideo,
+      dashboard1,
+      dashboard2
     ];
 
     let current = 0;
 
 
     /* ==============================
-       SHOW NEXT SCREEN
+       MOVE TO NEXT SCREEN
        ============================== */
 
     function showNext() {
 
       const currentScreen = screens[current];
 
-      // Move current screen out
+      // Move current screen to the left
       currentScreen.classList.remove("active");
       currentScreen.classList.add("exit");
 
@@ -138,48 +139,43 @@
 
       const nextScreen = screens[current];
 
-      // Reset next screen
+
+      // Remove previous classes
       nextScreen.classList.remove("exit");
 
-      // Force browser to recognize starting position
-      nextScreen.style.transform = "translateX(100%)";
+
+      // Force browser to recognize
+      // the starting position
+      void nextScreen.offsetWidth;
 
 
-      // Start next screen
-      requestAnimationFrame(() => {
-
-        requestAnimationFrame(() => {
-
-          nextScreen.classList.add("active");
-
-        });
-
-      });
+      // Slide next screen in from the right
+      nextScreen.classList.add("active");
 
 
       /* ==============================
-         IF NEXT SCREEN IS INTRO
+         RESTART INTRO VIDEO
          ============================== */
 
-      if (nextScreen === document.getElementById("introVideo")) {
+      if (nextScreen === introVideo) {
 
-        // Restart intro video
-        nextScreen.currentTime = 0;
+        introVideo.currentTime = 0;
 
-        nextScreen.play();
+        introVideo.play();
 
       }
 
 
       /* ==============================
-         IF LEAVING INTRO
+         PAUSE INTRO WHEN LEAVING
          ============================== */
 
-      if (currentScreen === document.getElementById("introVideo")) {
+      if (currentScreen === introVideo) {
 
-        // Pause intro when it leaves
         setTimeout(() => {
-          currentScreen.pause();
+
+          introVideo.pause();
+
         }, 1000);
 
       }
@@ -188,29 +184,24 @@
 
 
     /* ==============================
-       INTRO VIDEO FINISHED
+       INTRO → DASHBOARD 1
        ============================== */
 
-    document
-      .getElementById("introVideo")
-      .addEventListener("ended", () => {
+    introVideo.addEventListener("ended", () => {
 
-        // Intro → Dashboard 1
-        showNext();
+      showNext();
 
-      });
+    });
 
 
     /* ==============================
-       DASHBOARD TIMING
+       DASHBOARD 1 / 2 TIMING
        ============================== */
 
     setInterval(() => {
 
-      // Only switch automatically when
-      // we're on a dashboard
-
-      if (current !== 0) {
+      // Dashboard 1 or Dashboard 2
+      if (current === 1 || current === 2) {
 
         showNext();
 
