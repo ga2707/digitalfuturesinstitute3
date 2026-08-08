@@ -1,40 +1,80 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Auto-Switching Iframe</title>
+  <title>DFI TV Dashboard</title>
+
   <style>
     body {
       margin: 0;
       overflow: hidden;
+      background: black;
     }
+
     iframe {
       width: 100vw;
       height: 100vh;
       border: none;
+      display: none;
+    }
+
+    #introVideo {
+      width: 100vw;
+      height: 100vh;
+      object-fit: contain;
+      background: black;
     }
   </style>
 </head>
+
 <body>
+
+  <!-- DFI Intro Video -->
+  <video
+    id="introVideo"
+    autoplay
+    muted
+    playsinline>
+    <source src="ddi_intro_v7.mp4" type="video/mp4">
+  </video>
+
+  <!-- Looker Studio Dashboard -->
   <iframe id="reportFrame"
     src="https://lookerstudio.google.com/embed/reporting/c132c5eb-65fa-496f-ad25-ca9933f51177/page/hn66E"
     allowfullscreen
     sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox">
   </iframe>
 
+
   <script>
+
     const urls = [
       "https://lookerstudio.google.com/embed/reporting/c132c5eb-65fa-496f-ad25-ca9933f51177/page/hn66E",
       "https://lookerstudio.google.com/embed/reporting/ee650d72-7efa-4b7a-b3b2-939435c4a907/page/hn66E"
     ];
 
     let current = 0;
-    const frame = document.getElementById("reportFrame");
 
+    const frame = document.getElementById("reportFrame");
+    const video = document.getElementById("introVideo");
+
+
+    // When the intro video finishes, show the dashboard
+    video.addEventListener("ended", () => {
+      video.style.display = "none";
+      frame.style.display = "block";
+    });
+
+
+    // Switch between dashboards every 1 minute
     setInterval(() => {
       current = (current + 1) % urls.length;
       frame.src = urls[current];
-    }, 60000); // 60000 ms = 1 minute
+    }, 60000);
+
   </script>
+
 </body>
 </html>
+```
