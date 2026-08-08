@@ -12,62 +12,19 @@
       background: black;
     }
 
-    /* ==============================
-       INTRO VIDEO
-       ============================== */
+    iframe {
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      display: none;
+    }
 
     #introVideo {
-      position: fixed;
-      top: 0;
-      left: 0;
       width: 100vw;
       height: 100vh;
       object-fit: contain;
       background: black;
-      z-index: 10;
-
-      opacity: 1;
-      transform: scale(1);
-
-      transition:
-        opacity 1.2s ease-in-out,
-        transform 1.2s ease-in-out;
     }
-
-    /* ==============================
-       DASHBOARD
-       ============================== */
-
-    #reportFrame {
-      position: fixed;
-      top: 0;
-      left: 0;
-
-      width: 100vw;
-      height: 100vh;
-
-      border: none;
-
-      opacity: 0;
-      transform: scale(1.02);
-
-      transition:
-        opacity 1.2s ease-in-out,
-        transform 1.2s ease-in-out;
-    }
-
-    /* Visible dashboard */
-    #reportFrame.visible {
-      opacity: 1;
-      transform: scale(1);
-    }
-
-    /* Hidden dashboard */
-    #reportFrame.hidden {
-      opacity: 0;
-      transform: scale(1.02);
-    }
-
   </style>
 </head>
 
@@ -79,15 +36,11 @@
     autoplay
     muted
     playsinline>
-
-    <source src="dfi_intro_v7.mp4" type="video/mp4">
-
+    <source src="ddi_intro_v7.mp4" type="video/mp4">
   </video>
 
-
   <!-- Looker Studio Dashboard -->
-  <iframe
-    id="reportFrame"
+  <iframe id="reportFrame"
     src="https://lookerstudio.google.com/embed/reporting/c132c5eb-65fa-496f-ad25-ca9933f51177/page/hn66E"
     allowfullscreen
     sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox">
@@ -107,86 +60,17 @@
     const video = document.getElementById("introVideo");
 
 
-    // ==========================================
-    // INTRO VIDEO → DASHBOARD
-    // ==========================================
-
+    // When the intro video finishes, show the dashboard
     video.addEventListener("ended", () => {
-
-      // Prepare dashboard
-      frame.classList.add("hidden");
-
-      // Fade out video
-      video.style.opacity = "0";
-      video.style.transform = "scale(1.02)";
-
-
-      // Start dashboard fade/zoom
-      setTimeout(() => {
-
-        frame.style.display = "block";
-
-        // Force browser to recognize starting state
-        requestAnimationFrame(() => {
-
-          frame.classList.add("visible");
-
-        });
-
-      }, 200);
-
-
-      // Remove video after transition
-      setTimeout(() => {
-
-        video.style.display = "none";
-
-      }, 1200);
-
+      video.style.display = "none";
+      frame.style.display = "block";
     });
 
 
-    // ==========================================
-    // DASHBOARD SWITCH
-    // ==========================================
-
-    function switchDashboard() {
-
-      // Fade dashboard out
-      frame.classList.remove("visible");
-      frame.classList.add("hidden");
-
-
-      // Wait for fade-out
-      setTimeout(() => {
-
-        // Change dashboard
-        current = (current + 1) % urls.length;
-        frame.src = urls[current];
-
-
-        // Wait briefly for new dashboard
-        setTimeout(() => {
-
-          // Fade new dashboard in
-          frame.classList.remove("hidden");
-          frame.classList.add("visible");
-
-        }, 300);
-
-      }, 1200);
-
-    }
-
-
-    // ==========================================
-    // SWITCH EVERY 1 MINUTE
-    // ==========================================
-
+    // Switch between dashboards every 1 minute
     setInterval(() => {
-
-      switchDashboard();
-
+      current = (current + 1) % urls.length;
+      frame.src = urls[current];
     }, 60000);
 
   </script>
