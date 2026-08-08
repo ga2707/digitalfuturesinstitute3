@@ -10,6 +10,7 @@
       margin: 0;
       overflow: hidden;
       background: black;
+      perspective: 1500px;
     }
 
     iframe {
@@ -17,6 +18,23 @@
       height: 100vh;
       border: none;
       display: none;
+
+      /* Page transition */
+      transform-origin: left center;
+      transform: rotateY(0deg);
+      transition: transform 1.2s ease-in-out;
+
+      backface-visibility: hidden;
+    }
+
+    /* Page opening */
+    iframe.page-open {
+      transform: rotateY(0deg);
+    }
+
+    /* Page starting position */
+    iframe.page-closed {
+      transform: rotateY(90deg);
     }
 
     #introVideo {
@@ -60,17 +78,58 @@
     const video = document.getElementById("introVideo");
 
 
-    // When the intro video finishes, show the dashboard
+    // ==========================================
+    // When intro video finishes
+    // ==========================================
+
     video.addEventListener("ended", () => {
+
       video.style.display = "none";
+
+      // Show dashboard in closed position
       frame.style.display = "block";
+      frame.classList.add("page-closed");
+
+      // Small delay so browser registers starting position
+      setTimeout(() => {
+        frame.classList.remove("page-closed");
+        frame.classList.add("page-open");
+      }, 100);
+
     });
 
 
+    // ==========================================
     // Switch between dashboards every 1 minute
+    // ==========================================
+
     setInterval(() => {
-      current = (current + 1) % urls.length;
-      frame.src = urls[current];
+
+      // Close the current page
+      frame.classList.remove("page-open");
+
+      frame.classList.add("page-closed");
+
+
+      // Wait for page-turn animation
+      setTimeout(() => {
+
+        // Change dashboard
+        current = (current + 1) % urls.length;
+        frame.src = urls[current];
+
+
+        // Wait for dashboard to load
+        setTimeout(() => {
+
+          // Open the new page
+          frame.classList.remove("page-closed");
+          frame.classList.add("page-open");
+
+        }, 300);
+
+      }, 1200);
+
     }, 60000);
 
   </script>
