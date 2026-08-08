@@ -10,39 +10,64 @@
       margin: 0;
       overflow: hidden;
       background: black;
-      perspective: 1500px;
     }
 
-    iframe {
-      width: 100vw;
-      height: 100vh;
-      border: none;
-      display: none;
-
-      /* Page transition */
-      transform-origin: left center;
-      transform: rotateY(0deg);
-      transition: transform 1.2s ease-in-out;
-
-      backface-visibility: hidden;
-    }
-
-    /* Page opening */
-    iframe.page-open {
-      transform: rotateY(0deg);
-    }
-
-    /* Page starting position */
-    iframe.page-closed {
-      transform: rotateY(90deg);
-    }
+    /* ==============================
+       INTRO VIDEO
+       ============================== */
 
     #introVideo {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100vw;
       height: 100vh;
       object-fit: contain;
       background: black;
+      z-index: 10;
+
+      opacity: 1;
+      transform: scale(1);
+
+      transition:
+        opacity 1.2s ease-in-out,
+        transform 1.2s ease-in-out;
     }
+
+    /* ==============================
+       DASHBOARD
+       ============================== */
+
+    #reportFrame {
+      position: fixed;
+      top: 0;
+      left: 0;
+
+      width: 100vw;
+      height: 100vh;
+
+      border: none;
+
+      opacity: 0;
+      transform: scale(1.02);
+
+      transition:
+        opacity 1.2s ease-in-out,
+        transform 1.2s ease-in-out;
+    }
+
+    /* Visible dashboard */
+    #reportFrame.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Hidden dashboard */
+    #reportFrame.hidden {
+      opacity: 0;
+      transform: scale(1.02);
+    }
+
   </style>
 </head>
 
@@ -54,11 +79,15 @@
     autoplay
     muted
     playsinline>
+
     <source src="dfi_intro_v7.mp4" type="video/mp4">
+
   </video>
 
+
   <!-- Looker Studio Dashboard -->
-  <iframe id="reportFrame"
+  <iframe
+    id="reportFrame"
     src="https://lookerstudio.google.com/embed/reporting/c132c5eb-65fa-496f-ad25-ca9933f51177/page/hn66E"
     allowfullscreen
     sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox">
@@ -79,39 +108,56 @@
 
 
     // ==========================================
-    // When intro video finishes
+    // INTRO VIDEO → DASHBOARD
     // ==========================================
 
     video.addEventListener("ended", () => {
 
-      video.style.display = "none";
+      // Prepare dashboard
+      frame.classList.add("hidden");
 
-      // Show dashboard in closed position
-      frame.style.display = "block";
-      frame.classList.add("page-closed");
+      // Fade out video
+      video.style.opacity = "0";
+      video.style.transform = "scale(1.02)";
 
-      // Small delay so browser registers starting position
+
+      // Start dashboard fade/zoom
       setTimeout(() => {
-        frame.classList.remove("page-closed");
-        frame.classList.add("page-open");
-      }, 100);
+
+        frame.style.display = "block";
+
+        // Force browser to recognize starting state
+        requestAnimationFrame(() => {
+
+          frame.classList.add("visible");
+
+        });
+
+      }, 200);
+
+
+      // Remove video after transition
+      setTimeout(() => {
+
+        video.style.display = "none";
+
+      }, 1200);
 
     });
 
 
     // ==========================================
-    // Switch between dashboards every 1 minute
+    // DASHBOARD SWITCH
     // ==========================================
 
-    setInterval(() => {
+    function switchDashboard() {
 
-      // Close the current page
-      frame.classList.remove("page-open");
+      // Fade dashboard out
+      frame.classList.remove("visible");
+      frame.classList.add("hidden");
 
-      frame.classList.add("page-closed");
 
-
-      // Wait for page-turn animation
+      // Wait for fade-out
       setTimeout(() => {
 
         // Change dashboard
@@ -119,16 +165,27 @@
         frame.src = urls[current];
 
 
-        // Wait for dashboard to load
+        // Wait briefly for new dashboard
         setTimeout(() => {
 
-          // Open the new page
-          frame.classList.remove("page-closed");
-          frame.classList.add("page-open");
+          // Fade new dashboard in
+          frame.classList.remove("hidden");
+          frame.classList.add("visible");
 
         }, 300);
 
       }, 1200);
+
+    }
+
+
+    // ==========================================
+    // SWITCH EVERY 1 MINUTE
+    // ==========================================
+
+    setInterval(() => {
+
+      switchDashboard();
 
     }, 60000);
 
