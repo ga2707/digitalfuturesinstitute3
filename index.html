@@ -17,18 +17,6 @@
       height: 100vh;
       border: none;
       display: none;
-
-      /* Professional transition */
-      opacity: 0;
-      transform: scale(1.02);
-      transition:
-        opacity 1s ease-in-out,
-        transform 1s ease-in-out;
-    }
-
-    iframe.visible {
-      opacity: 1;
-      transform: scale(1);
     }
 
     #introVideo {
@@ -36,18 +24,6 @@
       height: 100vh;
       object-fit: contain;
       background: black;
-
-      /* Same transition as dashboard */
-      opacity: 1;
-      transform: scale(1);
-      transition:
-        opacity 1s ease-in-out,
-        transform 1s ease-in-out;
-    }
-
-    #introVideo.fade-out {
-      opacity: 0;
-      transform: scale(1.02);
     }
   </style>
 </head>
@@ -84,57 +60,17 @@
     const video = document.getElementById("introVideo");
 
 
-    // ==========================================
-    // VIDEO → DASHBOARD 1
-    // ==========================================
-
+    // When the intro video finishes, show the dashboard
     video.addEventListener("ended", () => {
-
-      // Fade and slightly zoom the video out
-      video.classList.add("fade-out");
-
-      // Prepare dashboard
+      video.style.display = "none";
       frame.style.display = "block";
-
-      // Wait briefly, then fade dashboard in
-      setTimeout(() => {
-        frame.classList.add("visible");
-      }, 100);
-
-      // Remove video after transition
-      setTimeout(() => {
-        video.style.display = "none";
-      }, 1000);
-
     });
 
 
-    // ==========================================
-    // DASHBOARD 1 → DASHBOARD 2
-    // ==========================================
-
+    // Switch between dashboards every 1 minute
     setInterval(() => {
-
-      // Fade dashboard out
-      frame.classList.remove("visible");
-
-      // Wait for fade-out
-      setTimeout(() => {
-
-        // Change dashboard
-        current = (current + 1) % urls.length;
-        frame.src = urls[current];
-
-        // Reset dashboard position
-        frame.style.transform = "scale(1.02)";
-
-        // Fade dashboard back in
-        setTimeout(() => {
-          frame.classList.add("visible");
-        }, 150);
-
-      }, 1000);
-
+      current = (current + 1) % urls.length;
+      frame.src = urls[current];
     }, 60000);
 
   </script>
