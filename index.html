@@ -28,6 +28,8 @@
 
       /* Start off-screen to the LEFT */
       transform: translateX(-100%);
+
+      /* 1-second slide transition */
       transition: transform 1s ease-in-out;
 
       z-index: 1;
@@ -121,6 +123,9 @@
 
     let current = 0;
 
+    /* Dashboard display time */
+    const dashboardDuration = 30000;
+
 
     /* ==============================
        MOVE TO NEXT SCREEN
@@ -130,32 +135,44 @@
 
       const currentScreen = screens[current];
 
-      // Move current screen to the RIGHT
+      /* ------------------------------
+         Move current screen RIGHT
+         ------------------------------ */
+
       currentScreen.classList.remove("active");
       currentScreen.classList.add("exit");
 
 
-      // Move to next screen
+      /* ------------------------------
+         Move to next screen
+         ------------------------------ */
+
       current = (current + 1) % screens.length;
 
       const nextScreen = screens[current];
 
 
-      // Remove previous classes
+      /* ------------------------------
+         Reset next screen
+         ------------------------------ */
+
       nextScreen.classList.remove("exit");
 
-
-      // Force browser to recognize
-      // the starting position
+      /* Force browser to recognize
+         the starting position */
       void nextScreen.offsetWidth;
 
 
-      // Slide next screen in from the LEFT
+      /* ------------------------------
+         Slide next screen IN
+         from the LEFT
+         ------------------------------ */
+
       nextScreen.classList.add("active");
 
 
       /* ==============================
-         RESTART INTRO VIDEO
+         INTRO VIDEO
          ============================== */
 
       if (nextScreen === introVideo) {
@@ -163,6 +180,34 @@
         introVideo.currentTime = 0;
 
         introVideo.play();
+
+      }
+
+
+      /* ==============================
+         DASHBOARD TIMER
+         ============================== */
+
+      if (
+        nextScreen === dashboard1 ||
+        nextScreen === dashboard2
+      ) {
+
+        /* Start a NEW 30-second timer
+           when the dashboard appears */
+
+        setTimeout(() => {
+
+          /* Make sure we're still
+             on the same dashboard */
+
+          if (current === screens.indexOf(nextScreen)) {
+
+            showNext();
+
+          }
+
+        }, dashboardDuration);
 
       }
 
@@ -194,21 +239,6 @@
 
     });
 
-
-    /* ==============================
-       DASHBOARD 1 / 2 TIMING
-       ============================== */
-
-    setInterval(() => {
-
-      // Dashboard 1 or Dashboard 2
-      if (current === 1 || current === 2) {
-
-        showNext();
-
-      }
-
-    }, 30000);
 
   </script>
 
